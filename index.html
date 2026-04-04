@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lunaris">
+<meta name="theme-color" content="#07060e">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Lunaris — Лунный путеводитель</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  ::-webkit-scrollbar { display:none; }
+  body {
+    font-family:'Cormorant Garamond','Georgia',serif;
+    background:linear-gradient(170deg,#07060e 0%,#0f0e1a 40%,#141225 100%);
+    color:#d4c9a8;
+    min-height:100vh;
+    min-height:100dvh;
+    max-width:430px;
+    margin:0 auto;
+    overflow-x:hidden;
+    position:relative;
+    padding-top:env(safe-area-inset-top);
+  }
+
+  /* Stars */
+  .stars{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;}
+  .star{position:absolute;border-radius:50%;background:#e8d89a;animation:twinkle 3s ease-in-out infinite alternate;}
+  @keyframes twinkle{0%{opacity:.1}100%{opacity:.6}}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  /* Header */
+  .header{text-align:center;padding:36px 20px 10px;}
+  .header h1{font-size:28px;font-weight:300;letter-spacing:4px;color:#e8d89a;text-transform:uppercase;}
+  .header .sub{font-size:11px;letter-spacing:8px;color:rgba(200,180,100,.4);margin-top:4px;text-transform:uppercase;}
+
+  /* Tab bar */
+  .tab-bar{
+    position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;
+    display:flex;justify-content:space-around;
+    background:linear-gradient(to top,rgba(7,6,14,.98),rgba(7,6,14,.85));
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    padding:10px 0 calc(24px + env(safe-area-inset-bottom));
+    z-index:10;border-top:1px solid rgba(200,180,100,.1);
+  }
+  .tab-btn{
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    background:none;border:none;cursor:pointer;
+    font-size:10px;letter-spacing:2px;font-family:'Cormorant Garamond',serif;text-transform:uppercase;
+    transition:color .3s;padding:4px 12px;
+  }
+  .tab-btn.active{color:#ffd700;}
+  .tab-btn:not(.active){color:rgba(200,180,100,.35);}
+  .tab-icon{font-size:22px;}
+
+  /* Content */
+  .content{position:relative;z-index:1;padding-bottom:100px;}
+  .page{display:none;animation:fadeIn .4s ease;}
+  .page.active{display:block;}
+
+  /* Card */
+  .card{
+    background:rgba(200,180,100,.04);border:1px solid rgba(200,180,100,.1);
+    border-radius:16px;margin:12px 16px;padding:20px;
+  }
+  .section-title{font-size:12px;letter-spacing:4px;text-transform:uppercase;color:rgba(200,180,100,.4);margin-bottom:16px;}
+
+  /* Moon info */
+  .moon-info{text-align:center;padding:20px 20px 0;}
+  .moon-age{font-size:13px;color:rgba(200,180,100,.5);letter-spacing:2px;margin-top:12px;}
+  .moon-name{font-size:22px;color:#e8d89a;margin-top:4px;font-weight:400;}
+  .illumination{font-size:40px;color:#ffd700;font-weight:300;margin-top:8px;}
+  .illum-label{font-size:12px;color:rgba(200,180,100,.4);margin-top:2px;}
+  .advice{font-size:13px;color:rgba(200,180,100,.6);text-align:center;font-style:italic;}
+
+  /* Month nav */
+  .month-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;}
+  .month-nav.center{justify-content:center;gap:16px;}
+  .month-btn{background:none;border:none;color:rgba(200,180,100,.5);font-size:20px;cursor:pointer;padding:4px 12px;}
+  .month-label{font-size:16px;color:#e8d89a;letter-spacing:3px;text-transform:uppercase;}
+
+  /* Calendar */
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 16px;}
+  .cal-header{text-align:center;font-size:10px;color:rgba(200,180,100,.3);letter-spacing:1px;padding:4px 0;}
+  .cal-day{text-align:center;padding:8px 0;border-radius:10px;cursor:pointer;border:1px solid transparent;transition:all .2s;}
+  .cal-day.today{background:rgba(255,215,0,.15);border-color:rgba(255,215,0,.3);}
+  .cal-day .num{font-size:13px;color:rgba(200,180,100,.6);}
+  .cal-day.today .num{color:#ffd700;}
+  .cal-day .moon{font-size:8px;margin-top:1px;opacity:.7;}
+
+  /* Phase legend */
+  .phase-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .phase-item{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(200,180,100,.5);}
+  .phase-item span{font-size:16px;}
+
+  /* Holiday filters */
+  .filter-bar{display:flex;gap:8px;padding:0 16px 12px;overflow-x:auto;}
+  .filter-btn{
+    padding:6px 14px;border-radius:20px;border:1px solid rgba(200,180,100,.1);
+    background:transparent;color:rgba(200,180,100,.4);
+    font-size:11px;letter-spacing:1px;cursor:pointer;white-space:nowrap;
+    font-family:'Cormorant Garamond',serif;
+  }
+  .filter-btn.active{border-color:rgba(255,215,0,.4);background:rgba(255,215,0,.1);color:#ffd700;}
+
+  /* Holiday list */
+  .holiday-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid rgba(200,180,100,.06);}
+  .holiday-icon{
+    font-size:26px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+    border-radius:12px;background:rgba(200,180,100,.06);flex-shrink:0;
+  }
+  .holiday-name{font-size:15px;color:#d4c9a8;}
+  .holiday-date{font-size:12px;color:rgba(200,180,100,.4);margin-top:2px;}
+  .badge{
+    font-size:9px;padding:2px 8px;border-radius:20px;letter-spacing:1px;
+    text-transform:uppercase;display:inline-block;margin-top:3px;margin-left:6px;
+  }
+  .badge-state{background:rgba(231,76,60,.13);color:#e74c3c;}
+  .badge-orthodox{background:rgba(255,215,0,.13);color:#ffd700;}
+  .badge-folk{background:rgba(230,126,34,.13);color:#e67e22;}
+  .badge-other{background:rgba(155,89,182,.13);color:#9b59b6;}
+  .holiday-countdown{font-size:11px;color:rgba(200,180,100,.3);white-space:nowrap;}
+
+  /* Natal */
+  .natal-input{margin-bottom:12px;}
+  .natal-input label{font-size:12px;color:rgba(200,180,100,.4);letter-spacing:1px;display:block;margin-bottom:6px;}
+  .natal-input input{
+    background:rgba(200,180,100,.06);border:1px solid rgba(200,180,100,.15);border-radius:12px;
+    color:#e8d89a;padding:12px 16px;font-size:16px;font-family:'Cormorant Garamond',serif;
+    width:100%;outline:none;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.7) sepia(1) hue-rotate(10deg);}
+  .natal-btn{
+    background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(200,180,100,.1));
+    border:1px solid rgba(255,215,0,.3);border-radius:12px;color:#ffd700;
+    padding:14px 24px;font-size:14px;font-family:'Cormorant Garamond',serif;
+    letter-spacing:3px;text-transform:uppercase;cursor:pointer;width:100%;transition:all .3s;
+  }
+  .natal-sign{text-align:center;}
+  .natal-sign .symbol{font-size:48px;}
+  .natal-sign .name{font-size:22px;color:#e8d89a;margin-top:4px;}
+  .element-badge{
+    display:inline-block;margin-top:8px;font-size:11px;letter-spacing:2px;text-transform:uppercase;
+    padding:4px 14px;border-radius:20px;
+  }
+  .planet-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(200,180,100,.06);font-size:14px;}
+  .planet-name{color:#e8d89a;}
+  .element-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .element-card{text-align:center;padding:12px;border-radius:12px;}
+  .element-card .count{font-size:20px;}
+  .element-card .label{font-size:11px;color:rgba(200,180,100,.5);margin-top:2px;}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="content">
+  <div class="header">
+    <h1>Lunaris</h1>
+    <div class="sub">Лунный путеводитель</div>
+  </div>
+
+  <!-- MOON PAGE -->
+  <div class="page active" id="page-moon">
+    <div class="moon-info">
+      <div id="moon-svg"></div>
+      <div class="moon-age" id="moon-age-text"></div>
+      <div class="moon-name" id="moon-name-text"></div>
+      <div class="illumination" id="moon-illum"></div>
+      <div class="illum-label">освещённость</div>
+    </div>
+    <div class="card"><div class="advice" id="moon-advice"></div></div>
+    <div class="month-nav">
+      <button class="month-btn" id="moon-prev">‹</button>
+      <span class="month-label" id="moon-month-label"></span>
+      <button class="month-btn" id="moon-next">›</button>
+    </div>
+    <div class="cal-grid" id="cal-headers"></div>
+    <div class="cal-grid" id="cal-days"></div>
+    <div class="card" style="margin-top:16px;">
+      <div class="section-title">Фазы луны</div>
+      <div class="phase-grid">
+        <div class="phase-item"><span>🌑</span> Новолуние</div>
+        <div class="phase-item"><span>🌒</span> Растущий серп</div>
+        <div class="phase-item"><span>🌓</span> Первая четверть</div>
+        <div class="phase-item"><span>🌔</span> Растущая луна</div>
+        <div class="phase-item"><span>🌕</span> Полнолуние</div>
+        <div class="phase-item"><span>🌖</span> Убывающая луна</div>
+        <div class="phase-item"><span>🌗</span> Последняя четв.</div>
+        <div class="phase-item"><span>🌘</span> Убывающий серп</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOLIDAYS PAGE -->
+  <div class="page" id="page-holidays">
+    <div class="month-nav center">
+      <button class="month-btn" id="hol-prev">‹</button>
+      <span class="month-label" id="hol-year-label"></span>
+      <button class="month-btn" id="hol-next">›</button>
+    </div>
+    <div class="filter-bar" id="filter-bar"></div>
+    <div style="padding:0 16px;" id="holiday-list"></div>
+  </div>
+
+  <!-- NATAL PAGE -->
+  <div class="page" id="page-natal">
+    <div class="card" style="margin-top:20px;">
+      <div class="section-title">Натальная карта</div>
+      <div class="natal-input">
+        <label>ДАТА РОЖДЕНИЯ</label>
+        <input type="date" id="birth-date">
+      </div>
+      <button class="natal-btn" id="natal-btn">Построить карту</button>
+    </div>
+    <div id="natal-result"></div>
+  </div>
+</div>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="moon"><span class="tab-icon">🌙</span><span>Луна</span></button>
+  <button class="tab-btn" data-tab="holidays"><span class="tab-icon">🎄</span><span>Праздники</span></button>
+  <button class="tab-btn" data-tab="natal"><span class="tab-icon">✨</span><span>Натальная</span></button>
+</div>
+
+<script>
+// ─── Data ───
+const MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const DAYS=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const ZODIAC=[
+  {name:'Овен',symbol:'♈',element:'fire',s:[3,21],e:[4,19]},{name:'Телец',symbol:'♉',element:'earth',s:[4,20],e:[5,20]},
+  {name:'Близнецы',symbol:'♊',element:'air',s:[5,21],e:[6,20]},{name:'Рак',symbol:'♋',element:'water',s:[6,21],e:[7,22]},
+  {name:'Лев',symbol:'♌',element:'fire',s:[7,23],e:[8,22]},{name:'Дева',symbol:'♍',element:'earth',s:[8,23],e:[9,22]},
+  {name:'Весы',symbol:'♎',element:'air',s:[9,23],e:[10,22]},{name:'Скорпион',symbol:'♏',element:'water',s:[10,23],e:[11,21]},
+  {name:'Стрелец',symbol:'♐',element:'fire',s:[11,22],e:[12,21]},{name:'Козерог',symbol:'♑',element:'earth',s:[12,22],e:[1,19]},
+  {name:'Водолей',symbol:'♒',element:'air',s:[1,20],e:[2,18]},{name:'Рыбы',symbol:'♓',element:'water',s:[2,19],e:[3,20]}
+];
+const PLANETS=['☉ Солнце','☽ Луна','☿ Меркурий','♀ Венера','♂ Марс','♃ Юпитер','♄ Сатурн','⛢ Уран','♆ Нептун','♇ Плутон'];
+const ELEM_COLORS={fire:'#e74c3c',earth:'#8B6914',air:'#3498db',water:'#1abc9c'};
+const ELEM_NAMES={fire:'🔥 Огонь',earth:'🌍 Земля',air:'💨 Воздух',water:'💧 Вода'};
+const BADGE_LABELS={state:'Государственный',orthodox:'Православный',folk:'Народный',other:'Другой'};
+const FILTER_LABELS=[['all','Все'],['state','Государств.'],['orthodox','Православные'],['folk','Народные'],['other','Другие']];
+
+// ─── Moon ───
+function moonPhase(d){
+  let y=d.getFullYear(),m=d.getMonth()+1,day=d.getDate(),c,e;
+  if(m<3){c=365.25*(y-1);e=30.6001*(m+13)}else{c=365.25*y;e=30.6001*(m+1)}
+  let jd=c+e+day-694039.09;jd/=29.5305882;jd-=parseInt(jd);
+  return Math.round(jd*29.5305882)%30;
+}
+function phaseName(age){
+  if(age===0||age===30)return{name:'Новолуние',icon:'🌑'};
+  if(age<7)return{name:'Растущий серп',icon:'🌒'};
+  if(age===7)return{name:'Первая четверть',icon:'🌓'};
+  if(age<15)return{name:'Растущая луна',icon:'🌔'};
+  if(age===15)return{name:'Полнолуние',icon:'🌕'};
+  if(age<22)return{name:'Убывающая луна',icon:'🌖'};
+  if(age===22)return{name:'Последняя четверть',icon:'🌗'};
+  return{name:'Убывающий серп',icon:'🌘'};
+}
+function moonIllum(age){return Math.round((1-Math.cos(age/29.5305882*2*Math.PI))/2*100)}
+
+function moonAdvice(age){
+  if(age<3)return'✦ Время новых начинаний и планирования ✦';
+  if(age<7)return'✦ Время для роста и действий ✦';
+  if(age<11)return'✦ Период активных решений ✦';
+  if(age<15)return'✦ Доводите дела до конца ✦';
+  if(age<18)return'✦ Время делиться и благодарить ✦';
+  if(age<22)return'✦ Анализируйте результаты ✦';
+  if(age<26)return'✦ Отпускайте ненужное ✦';
+  return'✦ Время для отдыха и медитации ✦';
+}
+
+function drawMoonSVG(age,size=160){
+  const r=size/2-4,cx=size/2,cy=size/2,phase=(age%30)/29.5305882;
+  const termX=Math.cos(phase*2*Math.PI)*r;
+  let d;
+  if(phase<0.25)d=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${Math.abs(termX)} ${r} 0 0 1 ${cx} ${cy-r}`;
+  else if(phase<0.5)d=`M ${cx} ${cy-r} A ${r} ${r} 0 0 0 ${cx} ${cy+r} A ${Math.abs(termX)} ${r} 0 0 0 ${cx} ${cy-r}`;
+  else if(phase<0.75)d=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${Math.abs(termX)} ${r} 0 0 1 ${cx} ${cy-r}`;
+  else d=`M ${cx} ${cy-r} A ${r} ${r} 0 0 1 ${cx} ${cy+r} A ${Math.abs(termX)} ${r} 0 0 0 ${cx} ${cy-r}`;
+  return`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <defs><radialGradient id="mg" cx="40%" cy="35%"><stop offset="0%" stop-color="#fffde7"/><stop offset="60%" stop-color="#e8d89a"/><stop offset="100%" stop-color="#c9b458"/></radialGradient>
+    <filter id="gl"><feGaussianBlur stdDeviation="3" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <circle cx="${cx}" cy="${cy}" r="${r+8}" fill="none" stroke="rgba(255,223,100,.08)" stroke-width="6"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="#1a1a2e"/>
+    <path d="${d}" fill="url(#mg)" filter="url(#gl)"/>
+    <circle cx="${cx-r*.2}" cy="${cy-r*.15}" r="${r*.08}" fill="rgba(0,0,0,.08)"/>
+    <circle cx="${cx+r*.25}" cy="${cy+r*.3}" r="${r*.12}" fill="rgba(0,0,0,.06)"/>
+    <circle cx="${cx-r*.1}" cy="${cy+r*.45}" r="${r*.06}" fill="rgba(0,0,0,.07)"/>
+  </svg>`;
+}
+
+// ─── Holidays ───
+function easterDate(y){
+  const a=y%4,b=y%7,c=y%19,d=(19*c+15)%30,e=(2*a+4*b-d+34)%7;
+  const mo=Math.floor((d+e+114)/31),da=((d+e+114)%31)+1;
+  const j=new Date(y,mo-1,da);j.setDate(j.getDate()+13);return j;
+}
+function getHolidays(y){
+  const e=easterDate(y),ps=new Date(e);ps.setDate(e.getDate()-7);
+  const asc=new Date(e);asc.setDate(e.getDate()+39);
+  const tri=new Date(e);tri.setDate(e.getDate()+49);
+  return[
+    {d:new Date(y,0,1),name:'Новый год',icon:'🎄',type:'state'},
+    {d:new Date(y,0,7),name:'Рождество Христово',icon:'⭐',type:'orthodox'},
+    {d:new Date(y,0,19),name:'Крещение Господне',icon:'💧',type:'orthodox'},
+    {d:new Date(y,1,14),name:'День Святого Валентина',icon:'❤️',type:'other'},
+    {d:new Date(y,1,23),name:'День защитника Отечества',icon:'🎖️',type:'state'},
+    {d:new Date(y,2,8),name:'Международный женский день',icon:'💐',type:'state'},
+    {d:new Date(y,2,7),name:'Масленица (начало)',icon:'🥞',type:'folk'},
+    {d:ps,name:'Вербное воскресенье',icon:'🌿',type:'orthodox'},
+    {d:e,name:'Пасха',icon:'🥚',type:'orthodox'},
+    {d:new Date(y,3,12),name:'День космонавтики',icon:'🚀',type:'state'},
+    {d:new Date(y,4,1),name:'Праздник Весны и Труда',icon:'🌷',type:'state'},
+    {d:new Date(y,4,9),name:'День Победы',icon:'🎗️',type:'state'},
+    {d:asc,name:'Вознесение Господне',icon:'✝️',type:'orthodox'},
+    {d:tri,name:'Троица',icon:'🌳',type:'orthodox'},
+    {d:new Date(y,5,1),name:'День защиты детей',icon:'👶',type:'other'},
+    {d:new Date(y,5,12),name:'День России',icon:'🇷🇺',type:'state'},
+    {d:new Date(y,6,8),name:'День семьи, любви и верности',icon:'🌼',type:'other'},
+    {d:new Date(y,7,19),name:'Преображение Господне',icon:'🍎',type:'orthodox'},
+    {d:new Date(y,7,28),name:'Успение Пресвятой Богородицы',icon:'🕊️',type:'orthodox'},
+    {d:new Date(y,8,1),name:'День знаний',icon:'📚',type:'state'},
+    {d:new Date(y,8,21),name:'Рождество Пресвятой Богородицы',icon:'🌹',type:'orthodox'},
+    {d:new Date(y,9,14),name:'Покров Пресвятой Богородицы',icon:'🛡️',type:'orthodox'},
+    {d:new Date(y,10,4),name:'День народного единства',icon:'🤝',type:'state'},
+    {d:new Date(y,11,31),name:'Новогодняя ночь',icon:'🎆',type:'state'},
+  ].sort((a,b)=>a.d-b.d);
+}
+
+// ─── Natal ───
+function getZodiac(m,d){
+  for(let i=0;i<ZODIAC.length;i++){
+    const z=ZODIAC[i];
+    if(z.s[0]===z.e[0]){if(m===z.s[0]&&d>=z.s[1]&&d<=z.e[1])return i;}
+    else if((m===z.s[0]&&d>=z.s[1])||(m===z.e[0]&&d<=z.e[1]))return i;
+  }
+  return 9;
+}
+function planetPositions(bd){
+  const seed=bd.getTime();
+  const rng=n=>((seed*(n+1)*9301+49297)%233280)/233280;
+  return PLANETS.map((p,i)=>({planet:p,signIdx:Math.floor(rng(i)*12),degree:Math.floor(rng(i+100)*30)}));
+}
+function drawWheel(positions,sunSign){
+  const size=320,cx=160,cy=160,oR=140,iR=100,pR=75;
+  let svg=`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="display:block;margin:0 auto;">`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${oR+8}" fill="none" stroke="rgba(200,180,100,.15)" stroke-width="1"/>`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${oR}" fill="none" stroke="rgba(200,180,100,.3)" stroke-width="1.5"/>`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${iR}" fill="none" stroke="rgba(200,180,100,.2)" stroke-width="1"/>`;
+  svg+=`<circle cx="${cx}" cy="${cy}" r="${pR}" fill="none" stroke="rgba(200,180,100,.1)" stroke-width=".5" stroke-dasharray="3 3"/>`;
+  ZODIAC.forEach((z,i)=>{
+    const a=(i*30-90)*Math.PI/180,ma=((i*30+15)-90)*Math.PI/180;
+    const x1=cx+Math.cos(a)*iR,y1=cy+Math.sin(a)*iR,x2=cx+Math.cos(a)*oR,y2=cy+Math.sin(a)*oR;
+    const tx=cx+Math.cos(ma)*((oR+iR)/2),ty=cy+Math.sin(ma)*((oR+iR)/2);
+    svg+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(200,180,100,.25)" stroke-width=".5"/>`;
+    if(i===sunSign){
+      const a2=((i+1)*30-90)*Math.PI/180;
+      svg+=`<path d="M ${cx+Math.cos(a)*iR} ${cy+Math.sin(a)*iR} A ${iR} ${iR} 0 0 1 ${cx+Math.cos(a2)*iR} ${cy+Math.sin(a2)*iR} L ${cx+Math.cos(a2)*oR} ${cy+Math.sin(a2)*oR} A ${oR} ${oR} 0 0 0 ${cx+Math.cos(a)*oR} ${cy+Math.sin(a)*oR} Z" fill="rgba(200,180,100,.12)"/>`;
+    }
+    const col=i===sunSign?'#ffd700':ELEM_COLORS[z.element];
+    const op=i===sunSign?1:.7;
+    svg+=`<text x="${tx}" y="${ty}" text-anchor="middle" dominant-baseline="central" font-size="14" fill="${col}" opacity="${op}" font-family="serif">${z.symbol}</text>`;
+  });
+  positions.forEach(p=>{
+    const td=p.signIdx*30+p.degree,a=(td-90)*Math.PI/180;
+    const px=cx+Math.cos(a)*pR,py=cy+Math.sin(a)*pR;
+    svg+=`<circle cx="${px}" cy="${py}" r="8" fill="rgba(200,180,100,.15)"/>`;
+    svg+=`<text x="${px}" y="${py}" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#e8d89a" font-family="serif">${p.planet.split(' ')[0]}</text>`;
+  });
+  svg+=`<circle cx="${cx}" cy="${cy}" r="20" fill="rgba(200,180,100,.05)" stroke="rgba(200,180,100,.2)" stroke-width=".5"/>`;
+  svg+=`<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central" font-size="16" fill="#ffd700" font-family="serif">${ZODIAC[sunSign].symbol}</text>`;
+  svg+=`</svg>`;
+  return svg;
+}
+
+// ─── State ───
+const today=new Date();
+let currentDate=new Date();
+let viewMonth=new Date();
+let holYear=today.getFullYear();
+let holFilter='all';
+
+// ─── Render ───
+function renderStars(){
+  const el=document.getElementById('stars');let h='';
+  for(let i=0;i<80;i++){
+    const x=Math.random()*100,y=Math.random()*100,s=Math.random()*1.5+.3,o=Math.random()*.5+.1,d=Math.random()*5;
+    h+=`<div class="star" style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;opacity:${o};animation-duration:${2+d}s;animation-delay:${d}s;"></div>`;
+  }
+  el.innerHTML=h;
+}
+
+function renderMoon(){
+  const age=moonPhase(currentDate),phase=phaseName(age),illum=moonIllum(age);
+  document.getElementById('moon-svg').innerHTML=drawMoonSVG(age);
+  document.getElementById('moon-age-text').textContent='Лунный день: '+age;
+  document.getElementById('moon-name-text').textContent=phase.name;
+  document.getElementById('moon-illum').textContent=illum+'%';
+  document.getElementById('moon-advice').textContent=moonAdvice(age);
+  document.getElementById('moon-month-label').textContent=MONTHS[viewMonth.getMonth()]+' '+viewMonth.getFullYear();
+
+  // Calendar headers
+  let hdr='';DAYS.forEach(d=>{hdr+=`<div class="cal-header">${d}</div>`;});
+  document.getElementById('cal-headers').innerHTML=hdr;
+
+  // Calendar days
+  const y=viewMonth.getFullYear(),m=viewMonth.getMonth();
+  const fd=new Date(y,m,1);let sd=fd.getDay()-1;if(sd<0)sd=6;
+  const dim=new Date(y,m+1,0).getDate();
+  let days='';
+  for(let i=0;i<sd;i++)days+='<div></div>';
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(y,m,d),age=moonPhase(dt),ph=phaseName(age);
+    const isT=dt.getDate()===today.getDate()&&dt.getMonth()===today.getMonth()&&dt.getFullYear()===today.getFullYear();
+    days+=`<div class="cal-day${isT?' today':''}" onclick="selectDay(${y},${m},${d})"><div class="num">${d}</div><div class="moon">${ph.icon}</div></div>`;
+  }
+  document.getElementById('cal-days').innerHTML=days;
+}
+
+function renderHolidays(){
+  document.getElementById('hol-year-label').textContent=holYear;
+  // Filters
+  let fb='';FILTER_LABELS.forEach(([k,l])=>{fb+=`<button class="filter-btn${holFilter===k?' active':''}" onclick="setFilter('${k}')">${l}</button>`;});
+  document.getElementById('filter-bar').innerHTML=fb;
+  // List
+  const hols=getHolidays(holYear).filter(h=>holFilter==='all'||h.type===holFilter);
+  let html='';
+  hols.forEach(h=>{
+    const dd=h.d.getDate()+' '+MONTHS[h.d.getMonth()].toLowerCase();
+    const diff=Math.ceil((h.d-today)/(1000*60*60*24));
+    const cd=diff===0?'сегодня':diff===1?'завтра':diff<0?'прошёл':'через '+diff+' дн.';
+    html+=`<div class="holiday-item">
+      <div class="holiday-icon">${h.icon}</div>
+      <div style="flex:1"><div class="holiday-name">${h.name}</div><div style="display:flex;align-items:center"><span class="holiday-date">${dd}</span><span class="badge badge-${h.type}">${BADGE_LABELS[h.type]}</span></div></div>
+      <div class="holiday-countdown">${cd}</div></div>`;
+  });
+  document.getElementById('holiday-list').innerHTML=html;
+}
+
+function renderNatal(bd){
+  const m=bd.getMonth()+1,d=bd.getDate();
+  const si=getZodiac(m,d),z=ZODIAC[si];
+  const pos=planetPositions(bd);
+  let html=`<div class="card natal-sign">${z.symbol?`<div class="symbol">${z.symbol}</div>`:''}
+    <div class="name">${z.name}</div>
+    <div class="element-badge" style="background:${ELEM_COLORS[z.element]}22;color:${ELEM_COLORS[z.element]}">${ELEM_NAMES[z.element]}</div></div>`;
+  html+=`<div style="padding:0 16px">${drawWheel(pos,si)}</div>`;
+  html+=`<div class="card"><div class="section-title">Позиции планет</div>`;
+  pos.forEach(p=>{
+    const s=ZODIAC[p.signIdx];
+    html+=`<div class="planet-row"><span class="planet-name">${p.planet}</span><span style="color:${ELEM_COLORS[s.element]}">${s.symbol} ${s.name} ${p.degree}°</span></div>`;
+  });
+  html+=`</div>`;
+  html+=`<div class="card"><div class="section-title">Стихии</div><div class="element-grid">`;
+  ['fire','earth','air','water'].forEach(el=>{
+    const cnt=pos.filter(p=>ZODIAC[p.signIdx].element===el).length;
+    const names={fire:'Огонь',earth:'Земля',air:'Воздух',water:'Вода'};
+    html+=`<div class="element-card" style="background:${ELEM_COLORS[el]}11;border:1px solid ${ELEM_COLORS[el]}33"><div class="count" style="color:${ELEM_COLORS[el]}">${cnt}</div><div class="label">${names[el]}</div></div>`;
+  });
+  html+=`</div></div>`;
+  document.getElementById('natal-result').innerHTML=html;
+}
+
+// ─── Handlers ───
+window.selectDay=function(y,m,d){currentDate=new Date(y,m,d);renderMoon();};
+window.setFilter=function(f){holFilter=f;renderHolidays();};
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+document.getElementById('moon-prev').addEventListener('click',()=>{viewMonth=new Date(viewMonth.getFullYear(),viewMonth.getMonth()-1,1);renderMoon();});
+document.getElementById('moon-next').addEventListener('click',()=>{viewMonth=new Date(viewMonth.getFullYear(),viewMonth.getMonth()+1,1);renderMoon();});
+document.getElementById('hol-prev').addEventListener('click',()=>{holYear--;renderHolidays();});
+document.getElementById('hol-next').addEventListener('click',()=>{holYear++;renderHolidays();});
+document.getElementById('natal-btn').addEventListener('click',()=>{
+  const v=document.getElementById('birth-date').value;
+  if(v)renderNatal(new Date(v));
+});
+
+// ─── Init ───
+renderStars();
+renderMoon();
+renderHolidays();
+
+// Register Service Worker
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+</script>
+</body>
+</html>
