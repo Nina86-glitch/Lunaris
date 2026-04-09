@@ -19,6 +19,7 @@ body{font-family:'Cormorant Garamond','Georgia',serif;background:linear-gradient
 .star{position:absolute;border-radius:50%;background:#e8d89a;animation:twinkle 3s ease-in-out infinite alternate;}
 @keyframes twinkle{0%{opacity:.1}100%{opacity:.6}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes coinFlip{0%{transform:rotateY(0)}100%{transform:rotateY(1800deg)}}
 .content{position:relative;z-index:1;padding-bottom:100px;}
 .header{text-align:center;padding:36px 20px 10px;}
 .header h1{font-size:28px;font-weight:300;letter-spacing:4px;color:#e8d89a;text-transform:uppercase;}
@@ -26,11 +27,11 @@ body{font-family:'Cormorant Garamond','Georgia',serif;background:linear-gradient
 .account-bar{text-align:center;padding:0 20px 8px;cursor:pointer;}
 .account-bar span{font-size:12px;color:rgba(200,180,100,.5);letter-spacing:1px;}
 .account-bar .name{color:#ffd700;font-size:14px;}
-.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;display:flex;justify-content:space-around;background:linear-gradient(to top,rgba(7,6,14,.98),rgba(7,6,14,.85));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:8px 0 calc(20px + env(safe-area-inset-bottom));z-index:10;border-top:1px solid rgba(200,180,100,.1);}
-.tab-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;font-family:'Cormorant Garamond',serif;text-transform:uppercase;transition:color .3s;padding:4px 8px;}
+.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;display:flex;justify-content:space-around;background:linear-gradient(to top,rgba(7,6,14,.98),rgba(7,6,14,.85));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:8px 0 calc(20px + env(safe-area-inset-bottom));z-index:10;border-top:1px solid rgba(200,180,100,.1);overflow-x:auto;}
+.tab-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;font-size:9px;letter-spacing:1px;font-family:'Cormorant Garamond',serif;text-transform:uppercase;transition:color .3s;padding:4px 6px;flex-shrink:0;}
 .tab-btn.active{color:#ffd700;}
 .tab-btn:not(.active){color:rgba(200,180,100,.35);}
-.tab-icon{font-size:20px;}
+.tab-icon{font-size:18px;}
 .page{display:none;animation:fadeIn .4s ease;}
 .page.active{display:block;}
 .card{background:rgba(200,180,100,.04);border:1px solid rgba(200,180,100,.1);border-radius:16px;margin:12px 16px;padding:20px;}
@@ -102,6 +103,27 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="time"]::-webki
 .legend{display:flex;gap:12px;justify-content:center;margin:8px 0;flex-wrap:wrap;}
 .legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:rgba(200,180,100,.4);}
 .legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+/* I Ching */
+.hex-container{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 0;}
+.hex-line{width:120px;height:14px;display:flex;justify-content:center;align-items:center;}
+.hex-line.yang{background:#e8d89a;border-radius:2px;}
+.hex-line.yin{display:flex;justify-content:space-between;}
+.hex-line.yin::before,.hex-line.yin::after{content:'';width:54px;height:14px;background:#e8d89a;border-radius:2px;}
+.hex-number{font-size:48px;color:#ffd700;font-weight:300;text-align:center;line-height:1;}
+.hex-name{font-size:22px;color:#e8d89a;text-align:center;margin-top:4px;}
+.hex-chinese{font-size:32px;color:rgba(255,215,0,.8);text-align:center;margin-top:8px;font-family:serif;}
+.hex-judgment{font-size:14px;color:rgba(200,180,100,.7);line-height:1.6;font-style:italic;text-align:center;padding:12px;border-left:2px solid rgba(255,215,0,.3);border-right:2px solid rgba(255,215,0,.3);margin:12px 0;}
+.hex-text{font-size:14px;color:rgba(200,180,100,.7);line-height:1.7;margin-top:12px;}
+.coin{display:inline-block;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffd700,#c9b458 60%,#8B6914);border:2px solid #c9b458;display:inline-flex;align-items:center;justify-content:center;font-size:24px;color:#07060e;margin:0 6px;font-weight:bold;box-shadow:0 4px 12px rgba(255,215,0,.3);}
+.coin.flipping{animation:coinFlip 1.2s ease-in-out;}
+.coins-row{display:flex;justify-content:center;gap:8px;margin:20px 0;}
+.hex-question{margin-bottom:14px;}
+.hex-history-item{padding:12px;background:rgba(200,180,100,.04);border-radius:10px;margin-bottom:8px;cursor:pointer;border:1px solid rgba(200,180,100,.08);}
+.hex-history-item:hover{background:rgba(200,180,100,.08);}
+.hex-history-num{color:#ffd700;font-size:18px;display:inline-block;margin-right:8px;}
+.hex-history-name{color:#e8d89a;font-size:14px;display:inline-block;}
+.hex-history-date{font-size:11px;color:rgba(200,180,100,.4);margin-top:4px;}
+.hex-history-q{font-size:12px;color:rgba(200,180,100,.5);font-style:italic;margin-top:4px;}
 </style>
 </head>
 <body>
@@ -122,6 +144,16 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="time"]::-webki
 <div class="month-nav center"><button class="month-btn" id="hol-prev">‹</button><span class="month-label" id="hol-year-label"></span><button class="month-btn" id="hol-next">›</button></div>
 <div class="filter-bar" id="filter-bar"></div><div style="padding:0 16px;" id="holiday-list"></div>
 </div>
+<div class="page" id="page-iching">
+<div class="card" style="margin-top:20px;text-align:center;"><div class="section-title">И-Цзин · Книга Перемен</div>
+<div style="font-size:13px;color:rgba(200,180,100,.6);line-height:1.6;margin-bottom:14px;">Сосредоточьтесь на вопросе и подбросьте монеты. Древняя китайская книга перемен даст ответ через одну из 64 гексаграмм.</div>
+<div class="form-group hex-question"><label>Ваш вопрос (необязательно)</label><input type="text" class="form-input" id="hex-question" placeholder="О чём хотите узнать?"></div>
+<div class="coins-row" id="coins-display"><div class="coin">☯</div><div class="coin">☯</div><div class="coin">☯</div></div>
+<button class="btn" id="hex-cast-btn">Бросить монеты</button>
+</div>
+<div id="hex-result"></div>
+<div class="card" id="hex-history-card" style="display:none;"><div class="section-title">История гаданий</div><div id="hex-history"></div></div>
+</div>
 <div class="page" id="page-natal">
 <div class="card" style="margin-top:20px;"><div class="section-title">Натальная карта</div><div class="form-group"><label>Дата рождения</label><input type="date" class="form-input" id="birth-date"></div><div class="form-group"><label>Время рождения</label><input type="time" class="form-input" id="birth-time" value="12:00"></div><button class="btn" id="natal-btn">Построить карту</button></div>
 <div id="natal-result"></div>
@@ -134,9 +166,10 @@ input[type="date"]::-webkit-calendar-picker-indicator,input[type="time"]::-webki
 <div class="tab-bar">
 <button class="tab-btn active" data-tab="today"><span class="tab-icon">✨</span><span>Сегодня</span></button>
 <button class="tab-btn" data-tab="moon"><span class="tab-icon">🌙</span><span>Луна</span></button>
-<button class="tab-btn" data-tab="holidays"><span class="tab-icon">🎄</span><span>Праздники</span></button>
-<button class="tab-btn" data-tab="natal"><span class="tab-icon">🔮</span><span>Натальная</span></button>
-<button class="tab-btn" data-tab="profile"><span class="tab-icon">👤</span><span>Профиль</span></button>
+<button class="tab-btn" data-tab="holidays"><span class="tab-icon">🎄</span><span>Празд.</span></button>
+<button class="tab-btn" data-tab="iching"><span class="tab-icon">☯</span><span>И-Цзин</span></button>
+<button class="tab-btn" data-tab="natal"><span class="tab-icon">🔮</span><span>Карта</span></button>
+<button class="tab-btn" data-tab="profile"><span class="tab-icon">👤</span><span>Я</span></button>
 </div>
 <script>
 const MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -165,6 +198,75 @@ const RECO_BY_MOON=[
 [{icon:'😴',title:'Отдых',text:'Позвольте себе замедлиться'},{icon:'🧘',title:'Медитация',text:'Глубокие практики и самопознание'},{icon:'🛁',title:'Релакс',text:'Ванна с солью, ароматерапия'},{icon:'🌙',title:'Сны',text:'Ведите дневник сновидений'}]
 ];
 
+// I-Ching: 64 hexagrams. Lines bottom-to-top, 1=yang, 0=yin
+// Order: King Wen sequence
+const ICHING=[
+{n:1,name:'Цянь · Творчество',ch:'乾',lines:[1,1,1,1,1,1],j:'Великое свершение. Творческая сила небес. Благоприятна стойкость.',t:'Время великих начинаний. Используйте свою силу для созидания. Будьте настойчивы и непреклонны в своих целях. Энергия Неба ведёт вас к успеху.',a:'Действуйте смело и уверенно. Не сомневайтесь в своих силах.'},
+{n:2,name:'Кунь · Исполнение',ch:'坤',lines:[0,0,0,0,0,0],j:'Изначальное свершение через стойкость. Принимающая сила Земли.',t:'Время восприимчивости и принятия. Не торопитесь, следуйте за обстоятельствами. Терпение и преданность принесут плоды. Будьте подобны плодородной земле.',a:'Слушайте, наблюдайте, принимайте. Не навязывайте свою волю.'},
+{n:3,name:'Чжунь · Начальная трудность',ch:'屯',lines:[1,0,0,0,1,0],j:'Изначальное свершение. Не предпринимай ничего. Полезно поставить князей.',t:'Начало нового всегда трудно. Не опускайте руки — препятствия временны. Найдите помощников и не действуйте в одиночку. Хаос родит порядок.',a:'Запаситесь терпением. Просите помощи у близких.'},
+{n:4,name:'Мэн · Недоразвитость',ch:'蒙',lines:[0,1,0,0,0,1],j:'Юношеская неопытность ведёт к свершению. Учитесь.',t:'Признайте, что вам нужно учиться. Найдите наставника и слушайте его. Глупо упорствовать в незнании. Откройтесь мудрости.',a:'Учитесь новому, задавайте вопросы.'},
+{n:5,name:'Сюй · Ожидание',ch:'需',lines:[1,1,1,0,1,0],j:'Будь правдив. Изначальное свершение. Стойкость к счастью.',t:'Не время для действий — время для ожидания. Накапливайте силы, готовьтесь. Уверенность и спокойствие принесут желаемое в нужный час.',a:'Подождите. Сейчас не время торопиться.'},
+{n:6,name:'Сун · Тяжба',ch:'訟',lines:[0,1,0,1,1,1],j:'Будь правдив. Препятствие. Благоприятно встретить великого человека.',t:'Конфликт неизбежен, но избегайте крайностей. Ищите компромисс, обратитесь к мудрому посреднику. Не доводите дело до суда.',a:'Избегайте конфликтов. Ищите мирное решение.'},
+{n:7,name:'Ши · Войско',ch:'師',lines:[0,1,0,0,0,0],j:'Стойкость. Возмужалому человеку — счастье. Хулы не будет.',t:'Время дисциплины и организации. Соберите силы и действуйте методично. Нужен сильный лидер. Цель оправдывает усилия.',a:'Будьте организованы и дисциплинированы.'},
+{n:8,name:'Би · Приближение',ch:'比',lines:[0,0,0,0,1,0],j:'Счастье. Стойкость не будет хулой.',t:'Время единения и союзов. Найдите единомышленников и держитесь вместе. Гармония в группе принесёт успех. Отбросьте гордыню.',a:'Объединяйтесь с близкими по духу.'},
+{n:9,name:'Сяо чу · Воспитание малым',ch:'小畜',lines:[1,1,1,1,0,1],j:'Свершение. Плотные тучи без дождя.',t:'Малые ограничения и задержки. Время накапливать силы и работать над деталями. Большие свершения впереди, но сначала — мелкие шаги.',a:'Сосредоточьтесь на мелочах и деталях.'},
+{n:10,name:'Ли · Поступь',ch:'履',lines:[1,1,0,1,1,1],j:'Наступишь на хвост тигра — он не укусит. Свершение.',t:'Идите осторожно, но решительно. Опасность реальна, но при правильном поведении вы её избежите. Манеры и такт — ваша защита.',a:'Действуйте осторожно и вежливо.'},
+{n:11,name:'Тай · Расцвет',ch:'泰',lines:[1,1,1,0,0,0],j:'Малое отходит, великое приходит. Счастье. Свершение.',t:'Время гармонии и процветания. Небо и Земля в единстве. Используйте это время для важных дел. Мир и согласие вокруг вас.',a:'Время для важных решений и дел.'},
+{n:12,name:'Пи · Упадок',ch:'否',lines:[0,0,0,1,1,1],j:'Негодные люди. Стойкость не на пользу.',t:'Время застоя и разлада. Не пытайтесь действовать против течения. Удалитесь, сохраните силы. Это пройдёт.',a:'Затаитесь, переждите неблагоприятный период.'},
+{n:13,name:'Тун жэнь · Родня',ch:'同人',lines:[1,0,1,1,1,1],j:'Сродство людей на полях. Свершение.',t:'Время единения с теми, кто близок по духу. Открытость и искренность объединят. Великое дело требует команды.',a:'Объединяйтесь во имя общей цели.'},
+{n:14,name:'Да ю · Владение многим',ch:'大有',lines:[1,1,1,1,0,1],j:'Изначальное свершение.',t:'Великое богатство и изобилие. Используйте свои ресурсы мудро и щедро. Делитесь с другими — это умножит ваше благосостояние.',a:'Будьте щедры, делитесь с другими.'},
+{n:15,name:'Цянь · Смирение',ch:'謙',lines:[0,0,1,0,0,0],j:'Свершение. Благородный человек обладает завершением.',t:'Скромность — путь к успеху. Не выпячивайтесь, но и не унижайтесь. Истинное достоинство не нуждается в показухе.',a:'Будьте скромны, но уверены в себе.'},
+{n:16,name:'Юй · Вольность',ch:'豫',lines:[0,0,0,1,0,0],j:'Полезно поставить князей и двинуть войска.',t:'Время вдохновения и энтузиазма. Используйте этот импульс для важных начинаний. Радость и уверенность ведут к успеху.',a:'Действуйте с энтузиазмом и радостью.'},
+{n:17,name:'Суй · Последование',ch:'隨',lines:[1,0,0,1,1,0],j:'Изначальное свершение. Полезна стойкость. Хулы не будет.',t:'Время следования за обстоятельствами и за мудрыми. Гибкость важнее упрямства. Адаптируйтесь к переменам.',a:'Следуйте за течением жизни.'},
+{n:18,name:'Гу · Исправление',ch:'蠱',lines:[0,1,1,0,0,1],j:'Изначальное свершение. Благоприятен брод через великую реку.',t:'Пришло время исправить старые ошибки и проблемы. Не игнорируйте — действуйте. Очищение принесёт новый рост.',a:'Исправьте старые ошибки сейчас.'},
+{n:19,name:'Линь · Посещение',ch:'臨',lines:[1,1,0,0,0,0],j:'Изначальное свершение. Полезна стойкость.',t:'Время приближения хорошего. Используйте благоприятный момент для действий. Но помните — и это пройдёт. Не теряйте бдительности.',a:'Используйте благоприятный момент.'},
+{n:20,name:'Гуань · Созерцание',ch:'觀',lines:[0,0,0,0,1,1],j:'Умыл руки, но не приносил жертвы. Будь правдив.',t:'Время наблюдения и размышления. Не спешите действовать — сначала поймите ситуацию. Внутренняя ясность приведёт к правильным решениям.',a:'Наблюдайте и размышляйте.'},
+{n:21,name:'Ши хо · Стиснутые зубы',ch:'噬嗑',lines:[1,0,0,1,0,1],j:'Свершение. Полезно применить тяжбу.',t:'Преодолейте препятствие решительными действиями. Не уклоняйтесь от проблемы — встретьте её лицом к лицу. Справедливость восторжествует.',a:'Решительно устраните препятствие.'},
+{n:22,name:'Би · Убранство',ch:'賁',lines:[1,0,1,0,0,1],j:'Свершение. Малому полезно иметь куда выступить.',t:'Время заботы о форме и красоте. Внешний вид и манеры важны. Но не забывайте о сути — украшение не должно скрывать содержания.',a:'Уделите внимание внешнему виду и эстетике.'},
+{n:23,name:'Бо · Разорение',ch:'剝',lines:[0,0,0,0,0,1],j:'Не благоприятно иметь куда выступить.',t:'Время упадка и разрушения старого. Не сопротивляйтесь — дайте старому уйти. Это освободит место для нового.',a:'Отпустите старое, не цепляйтесь.'},
+{n:24,name:'Фу · Возврат',ch:'復',lines:[1,0,0,0,0,0],j:'Свершение. Выходу и входу не будет вреда.',t:'Время возвращения и обновления. Свет возвращается после тьмы. Начните заново с обновлёнными силами.',a:'Начните заново, обновитесь.'},
+{n:25,name:'У ван · Беспорочность',ch:'無妄',lines:[1,0,0,1,1,1],j:'Изначальное свершение. Полезна стойкость.',t:'Действуйте искренне и без задних мыслей. Естественность — ваш союзник. Не пытайтесь манипулировать ситуацией.',a:'Будьте искренни и естественны.'},
+{n:26,name:'Да чу · Воспитание великим',ch:'大畜',lines:[1,1,1,0,0,1],j:'Полезна стойкость. Кормление не от себя — счастье.',t:'Накопление сил и знаний для великих дел. Учитесь у мудрых прошлого. Сила и мудрость придут со временем.',a:'Накапливайте знания и силы.'},
+{n:27,name:'И · Питание',ch:'頤',lines:[1,0,0,0,0,1],j:'Стойкость к счастью. Созерцай питание.',t:'Заботьтесь о том, чем питаете тело и душу. Будьте избирательны в еде, словах, мыслях. Что вы потребляете — тем и становитесь.',a:'Питайтесь правильно — телом и душой.'},
+{n:28,name:'Да го · Переразвитие великого',ch:'大過',lines:[0,1,1,1,1,0],j:'Стропила прогибаются. Полезно иметь куда выступить.',t:'Чрезмерное напряжение, груз слишком велик. Облегчите ношу или попросите помощи. Крайности опасны.',a:'Уменьшите нагрузку, не перенапрягайтесь.'},
+{n:29,name:'Си кань · Бездна',ch:'坎',lines:[0,1,0,0,1,0],j:'Будь правдив. Только в сердце свершение.',t:'Опасность повторяется. Сохраняйте искренность сердца — это ваша опора. Как вода течёт через ущелье, найдите свой путь.',a:'Сохраняйте искренность среди трудностей.'},
+{n:30,name:'Ли · Сияние',ch:'離',lines:[1,0,1,1,0,1],j:'Полезна стойкость. Свершение. Разводить корову — счастье.',t:'Свет и ясность освещают путь. Привязанность к ясному и прекрасному. Кротость и зависимость от высшего ведут к успеху.',a:'Стремитесь к ясности и красоте.'},
+{n:31,name:'Сянь · Сочетание',ch:'咸',lines:[0,0,1,1,1,0],j:'Свершение. Полезна стойкость. Брать жену — счастье.',t:'Взаимное притяжение и влияние. Время для отношений и союзов. Чувствительность откроет двери.',a:'Откройтесь чувствам и отношениям.'},
+{n:32,name:'Хэн · Постоянство',ch:'恆',lines:[0,1,1,1,0,0],j:'Свершение. Хулы не будет. Полезна стойкость.',t:'Сохраняйте постоянство и преданность. Долгосрочные обязательства приносят плоды. Не меняйте курс без причины.',a:'Будьте постоянны в своих делах.'},
+{n:33,name:'Дунь · Бегство',ch:'遯',lines:[0,0,1,1,1,1],j:'Свершение. Малому полезна стойкость.',t:'Время отступления. Не вступайте в борьбу — отступите достойно. Это не поражение, а мудрость. Сохраните силы для лучшего момента.',a:'Отступите с достоинством.'},
+{n:34,name:'Да чжуан · Великая мощь',ch:'大壯',lines:[1,1,1,1,0,0],j:'Полезна стойкость.',t:'Великая сила в ваших руках. Используйте её разумно и справедливо. Сила без мудрости разрушительна.',a:'Используйте силу мудро.'},
+{n:35,name:'Цзинь · Восход',ch:'晉',lines:[0,0,0,1,0,1],j:'Сильному князю давай много коней. И днём он трижды примет.',t:'Быстрый прогресс и продвижение. Свет восходящего солнца. Используйте этот момент для роста и признания.',a:'Двигайтесь вперёд уверенно.'},
+{n:36,name:'Мин и · Поражение света',ch:'明夷',lines:[1,0,1,0,0,0],j:'В трудности полезна стойкость.',t:'Свет скрыт. Время затаиться и сохранить внутренний свет. Не показывайте всего, что знаете. Будьте мудры в неблагоприятное время.',a:'Скройте истинные намерения.'},
+{n:37,name:'Цзя жэнь · Домашние',ch:'家人',lines:[1,0,1,1,0,1],j:'Полезна стойкость женщины.',t:'Семья и близкие — ваша опора. Уделите внимание дому и отношениям. Порядок дома — порядок в жизни.',a:'Уделите время семье и дому.'},
+{n:38,name:'Куй · Разлад',ch:'睽',lines:[1,0,1,1,0,1],j:'В малых делах счастье.',t:'Разногласия и противоположности. Не пытайтесь насильно объединить. Малые дела возможны, великие — пока нет.',a:'Не настаивайте, отложите большие планы.'},
+{n:39,name:'Цзянь · Препятствие',ch:'蹇',lines:[0,0,1,0,1,0],j:'Благоприятен юго-запад. Не благоприятен северо-восток.',t:'Препятствия на пути. Остановитесь и осмотритесь. Иногда нужно изменить направление. Просите помощи у мудрых.',a:'Остановитесь, измените курс.'},
+{n:40,name:'Цзе · Разрешение',ch:'解',lines:[0,1,0,0,1,0],j:'Благоприятен юго-запад.',t:'Освобождение от напряжения. Прощайте и забывайте обиды. Не затягивайте решение проблем — действуйте сейчас.',a:'Простите, отпустите обиды.'},
+{n:41,name:'Сунь · Убыль',ch:'損',lines:[1,1,0,0,0,1],j:'Будь правдив. Изначальное счастье.',t:'Время добровольных жертв ради высшей цели. Меньше — это иногда больше. Простота приносит ясность.',a:'Откажитесь от лишнего ради главного.'},
+{n:42,name:'И · Приумножение',ch:'益',lines:[1,0,0,0,1,1],j:'Полезно иметь куда выступить.',t:'Время роста и приумножения. Действуйте смело — обстоятельства благоприятствуют. Помогайте другим, и получите вдвойне.',a:'Расширяйтесь, помогайте другим.'},
+{n:43,name:'Гуай · Прорыв',ch:'夬',lines:[1,1,1,1,1,0],j:'Объяви при царском дворе. Правдиво возгласи опасность.',t:'Решающий момент. Открыто объявите свою позицию. Прорыв возможен, но действуйте без злобы и хитрости.',a:'Действуйте открыто и честно.'},
+{n:44,name:'Гоу · Перечение',ch:'姤',lines:[0,1,1,1,1,1],j:'Женщина сильна. Не бери жену.',t:'Неожиданная встреча с искушением. Будьте бдительны — слабое может стать сильным. Не поддавайтесь соблазнам.',a:'Будьте бдительны к соблазнам.'},
+{n:45,name:'Цуй · Воссоединение',ch:'萃',lines:[0,0,0,1,1,0],j:'Свершение. Царь приближается к храму.',t:'Время собирания и объединения. Соберите ресурсы, союзников, мысли. Великое дело требует подготовки.',a:'Собирайте силы и людей.'},
+{n:46,name:'Шэн · Подъём',ch:'升',lines:[0,1,1,0,0,0],j:'Изначальное свершение. Действуй, не сомневайся.',t:'Постепенный, но уверенный рост. Как росток пробивается сквозь землю — терпеливо и неуклонно. Каждый шаг приближает к цели.',a:'Продвигайтесь шаг за шагом.'},
+{n:47,name:'Кунь · Истощение',ch:'困',lines:[0,1,0,1,1,0],j:'Свершение. Стойкость великого человека.',t:'Усталость и истощение. Сохраняйте веру и достоинство. Не жалуйтесь — действуйте молча. Время ограничений временно.',a:'Сохраняйте достоинство в трудности.'},
+{n:48,name:'Цзин · Колодец',ch:'井',lines:[0,1,1,0,1,0],j:'Меняют города, но не меняют колодец.',t:'Внутренний источник неисчерпаем. Возвращайтесь к основам, к корням. Питайтесь из глубоких источников мудрости.',a:'Возвращайтесь к основам.'},
+{n:49,name:'Гэ · Смена',ch:'革',lines:[1,0,1,1,1,0],j:'В свой день будь правдив. Изначальное свершение.',t:'Время радикальных перемен. Старое должно уйти, чтобы родилось новое. Революция в жизни. Не бойтесь обновления.',a:'Примите перемены, обновитесь.'},
+{n:50,name:'Дин · Жертвенник',ch:'鼎',lines:[0,1,1,1,0,1],j:'Изначальное счастье. Свершение.',t:'Время трансформации и культивации. Как пища готовится в котле, так и вы готовитесь к чему-то новому. Великое свершение.',a:'Преобразуйте себя и обстоятельства.'},
+{n:51,name:'Чжэнь · Возбуждение',ch:'震',lines:[1,0,0,1,0,0],j:'Молния пугает за сотни ли. Свершение.',t:'Внезапное потрясение. Не паникуйте — испытание делает сильнее. После грозы наступит ясность.',a:'Сохраняйте спокойствие в потрясениях.'},
+{n:52,name:'Гэнь · Сосредоточенность',ch:'艮',lines:[0,0,1,0,0,1],j:'Сосредоточься на своей спине. Не воспринимай своего тела.',t:'Время полной остановки и медитации. Успокойте ум, обретите внутренний покой. В тишине рождается мудрость.',a:'Остановитесь и помедитируйте.'},
+{n:53,name:'Цзянь · Течение',ch:'漸',lines:[0,0,1,0,1,1],j:'Девушка идёт замуж. Счастье. Полезна стойкость.',t:'Постепенное развитие. Не торопите события — естественный ход вещей приведёт к успеху. Каждый шаг важен.',a:'Действуйте постепенно и терпеливо.'},
+{n:54,name:'Гуй мэй · Невеста',ch:'歸妹',lines:[1,1,0,1,0,0],j:'В походе — несчастье. Ничего благоприятного.',t:'Подчинённое положение. Знайте своё место и не претендуйте на большее сейчас. Гордость может навредить.',a:'Знайте своё место, не претендуйте на лишнее.'},
+{n:55,name:'Фэн · Изобилие',ch:'豐',lines:[1,0,1,1,0,0],j:'Свершение. Царь приближается. Не печалься.',t:'Пик изобилия и расцвета. Наслаждайтесь моментом, но помните — за пиком следует спад. Будьте мудры в изобилии.',a:'Наслаждайтесь моментом, но будьте мудры.'},
+{n:56,name:'Люй · Странник',ch:'旅',lines:[0,0,1,1,0,1],j:'Малому свершение. Странник стойкости — счастье.',t:'Время странствий, физических или духовных. Не привязывайтесь к месту. Гибкость и скромность — спутники путника.',a:'Будьте гибким, не привязывайтесь.'},
+{n:57,name:'Сюнь · Проникновение',ch:'巽',lines:[0,1,1,0,1,1],j:'Малому свершение. Полезно иметь куда выступить.',t:'Мягкое и постоянное влияние. Как ветер проникает повсюду — действуйте незаметно, но настойчиво. Малыми делами достигайте великого.',a:'Действуйте мягко, но настойчиво.'},
+{n:58,name:'Дуй · Радость',ch:'兌',lines:[1,1,0,1,1,0],j:'Свершение. Полезна стойкость.',t:'Время радости и общения. Делитесь радостью с другими. Искренние отношения принесут счастье. Слова имеют силу.',a:'Делитесь радостью с близкими.'},
+{n:59,name:'Хуань · Раздробление',ch:'渙',lines:[0,1,0,0,1,1],j:'Свершение. Царь приближается к храму.',t:'Растворение преград. Эгоизм и недопонимания исчезают. Время единения через жертву и общую цель.',a:'Растворите эго, объединитесь с другими.'},
+{n:60,name:'Цзе · Ограничение',ch:'節',lines:[1,1,0,0,1,0],j:'Свершение. Горькому ограничению нельзя быть стойким.',t:'Время самоограничений и дисциплины. Установите границы. Но не доводите до крайности — гибкость важна.',a:'Установите разумные границы.'},
+{n:61,name:'Чжун фу · Внутренняя правда',ch:'中孚',lines:[1,1,0,0,1,1],j:'Вепрям и рыбам — счастье. Полезен брод.',t:'Глубокая искренность достигает даже самого недоступного. Доверяйте сердцу. Истина откроет все двери.',a:'Действуйте от сердца, искренне.'},
+{n:62,name:'Сяо го · Переразвитие малого',ch:'小過',lines:[0,0,1,1,0,0],j:'Свершение. Полезна стойкость. В малых делах можно действовать.',t:'Время малых дел, не великих. Сосредоточьтесь на деталях и скромности. Не замахивайтесь на большее, чем можете.',a:'Делайте малые дела хорошо.'},
+{n:63,name:'Цзи цзи · Уже конец',ch:'既濟',lines:[1,0,1,0,1,0],j:'Свершение малому. Полезна стойкость.',t:'Цель достигнута, но это лишь начало нового цикла. Не расслабляйтесь — поддерживайте порядок. Будьте бдительны.',a:'Завершили? Готовьтесь к новому циклу.'},
+{n:64,name:'Вэй цзи · Ещё не конец',ch:'未濟',lines:[0,1,0,1,0,1],j:'Свершение. Молодой лис почти переправился.',t:'Близко к цели, но ещё не достигли. Сохраняйте осторожность до самого конца. Преждевременная победа может всё испортить.',a:'Не расслабляйтесь до самого конца.'}
+];
+
 function moonPhase(d){let y=d.getFullYear(),m=d.getMonth()+1,day=d.getDate(),c,e;if(m<3){c=365.25*(y-1);e=30.6001*(m+13)}else{c=365.25*y;e=30.6001*(m+1)}let jd=c+e+day-694039.09;jd/=29.5305882;jd-=parseInt(jd);return Math.round(jd*29.5305882)%30;}
 function phaseName(age){if(age===0||age===30)return{name:'Новолуние',icon:'🌑'};if(age<7)return{name:'Растущий серп',icon:'🌒'};if(age===7)return{name:'Первая четверть',icon:'🌓'};if(age<15)return{name:'Растущая луна',icon:'🌔'};if(age===15)return{name:'Полнолуние',icon:'🌕'};if(age<22)return{name:'Убывающая луна',icon:'🌖'};if(age===22)return{name:'Последняя четверть',icon:'🌗'};return{name:'Убывающий серп',icon:'🌘'};}
 function moonIllum(age){return Math.round((1-Math.cos(age/29.5305882*2*Math.PI))/2*100)}
@@ -184,15 +286,35 @@ function loadProfile(){try{return JSON.parse(localStorage.getItem('lunaris_profi
 function saveProfileData(d){localStorage.setItem('lunaris_profile',JSON.stringify(d));}
 function todayAffirmation(){const d=new Date();const idx=(d.getFullYear()*366+d.getMonth()*31+d.getDate())%AFFIRMATIONS.length;return AFFIRMATIONS[idx];}
 
+// I-Ching functions
+function findHexagram(lines){for(let i=0;i<ICHING.length;i++){let m=true;for(let j=0;j<6;j++){if(ICHING[i].lines[j]!==lines[j]){m=false;break;}}if(m)return ICHING[i];}return ICHING[0];}
+function castCoin(){return Math.random()<0.5?2:3;} // 2=tails(yin), 3=heads(yang)
+function castLine(){const sum=castCoin()+castCoin()+castCoin();return sum%2;} // 0=yin, 1=yang
+function castHexagram(){const lines=[];for(let i=0;i<6;i++)lines.push(castLine());return lines;}
+function dailyHexagram(){
+  // Daily seed based on date + profile name
+  const d=new Date();
+  const p=loadProfile();
+  let seed=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
+  if(p&&p.first)for(const c of p.first)seed+=c.charCodeAt(0);
+  const idx=seed%64;
+  return ICHING[idx];
+}
+function loadHexHistory(){try{return JSON.parse(localStorage.getItem('lunaris_hex_history'))||[];}catch(e){return[];}}
+function saveHexHistory(arr){localStorage.setItem('lunaris_hex_history',JSON.stringify(arr.slice(0,10)));}
+function drawHexagram(lines){let h='<div class="hex-container">';for(let i=5;i>=0;i--){h+='<div class="hex-line '+(lines[i]?'yang':'yin')+'"></div>';}h+='</div>';return h;}
+
 const today=new Date();let currentDate=new Date();let viewMonth=new Date();let holYear=today.getFullYear();let holFilter='all';
 
 function renderStars(){const el=document.getElementById('stars');let h='';for(let i=0;i<80;i++){const x=Math.random()*100,y=Math.random()*100,s=Math.random()*1.5+.3,o=Math.random()*.5+.1,dl=Math.random()*5;h+='<div class="star" style="left:'+x+'%;top:'+y+'%;width:'+s+'px;height:'+s+'px;opacity:'+o+';animation-duration:'+(2+dl)+'s;animation-delay:'+dl+'s;"></div>';}el.innerHTML=h;}
 
 function renderAccountBar(){const p=loadProfile();const el=document.getElementById('account-bar');if(p&&p.first){el.innerHTML='<span class="name">👤 '+p.first+' '+(p.last||'')+'</span>';}else{el.innerHTML='<span>Нажмите, чтобы создать профиль →</span>';}}
 
-function renderToday(){const el=document.getElementById('page-today');const age=moonPhase(today);const phase=phaseName(age);const illum=moonIllum(age);const chiQ=chiDayQuality(today);const chiD=chiDayDesc(chiQ);const recoIdx=moonRecoIdx(age);const recos=RECO_BY_MOON[recoIdx];const aff=todayAffirmation();const prof=loadProfile();const aIdx=chiAnimal(today.getFullYear());const eIdx=chiElement(today.getFullYear());const hols=getHolidays(today.getFullYear());let nextHol=hols.find(h=>h.d>=today);if(!nextHol)nextHol=getHolidays(today.getFullYear()+1)[0];const daysTo=nextHol?Math.ceil((nextHol.d-today)/864e5):0;
+function renderToday(){const el=document.getElementById('page-today');const age=moonPhase(today);const phase=phaseName(age);const illum=moonIllum(age);const chiQ=chiDayQuality(today);const chiD=chiDayDesc(chiQ);const recoIdx=moonRecoIdx(age);const recos=RECO_BY_MOON[recoIdx];const aff=todayAffirmation();const prof=loadProfile();const aIdx=chiAnimal(today.getFullYear());const eIdx=chiElement(today.getFullYear());const hols=getHolidays(today.getFullYear());let nextHol=hols.find(h=>h.d>=today);if(!nextHol)nextHol=getHolidays(today.getFullYear()+1)[0];const daysTo=nextHol?Math.ceil((nextHol.d-today)/864e5):0;const dayHex=dailyHexagram();
 let html='<div class="affirmation-box"><div class="affirmation-label">Аффирмация дня</div><div class="affirmation-text">«'+aff+'»</div></div>';
 html+='<div class="card" style="text-align:center;"><div style="font-size:11px;color:rgba(200,180,100,.4);letter-spacing:2px;text-transform:uppercase;">'+today.getDate()+' '+MONTHS[today.getMonth()]+' '+today.getFullYear()+'</div><div style="display:flex;justify-content:center;align-items:center;gap:16px;margin:12px 0;"><div>'+drawMoonSVG(age,80)+'</div><div style="text-align:left;"><div style="font-size:18px;color:#e8d89a;">'+phase.name+'</div><div style="font-size:13px;color:rgba(200,180,100,.5);">Лунный день: '+age+' · '+illum+'%</div><div style="margin-top:6px;"><span class="chi-badge chi-'+chiQ+'">'+chiD.icon+' '+chiD.label+'</span></div></div></div><div style="font-size:12px;color:rgba(200,180,100,.4);margin-top:4px;">'+CHI_ANIMAL_ICONS[aIdx]+' Год '+CHI_ANIMALS[aIdx]+' · '+CHI_ELEM_ICONS[eIdx]+' '+CHI_ELEMENTS_5[eIdx]+'</div></div>';
+// Daily I-Ching
+html+='<div class="card" style="text-align:center;"><div class="section-title">Гексаграмма дня</div><div class="hex-chinese">'+dayHex.ch+'</div><div style="font-size:14px;color:#ffd700;margin-top:4px;">№'+dayHex.n+' · '+dayHex.name+'</div>'+drawHexagram(dayHex.lines)+'<div style="font-size:13px;color:rgba(200,180,100,.7);font-style:italic;line-height:1.6;margin-top:8px;">«'+dayHex.a+'»</div></div>';
 if(prof&&prof.birth){const bd=new Date(prof.birth);const si=getZodiac(bd.getMonth()+1,bd.getDate());const nn=calcNameNumber((prof.last||'')+' '+(prof.first||'')+' '+(prof.middle||''));html+='<div class="card" style="text-align:center;"><div style="font-size:11px;color:rgba(200,180,100,.4);letter-spacing:2px;margin-bottom:6px;">ВАШ ЗНАК</div><div style="font-size:28px;">'+ZODIAC[si].symbol+'</div><div style="font-size:16px;color:#e8d89a;">'+ZODIAC[si].name+'</div><div style="font-size:12px;color:rgba(200,180,100,.4);margin-top:4px;">Число имени: <span style="color:#ffd700;font-size:16px;">'+nn+'</span></div></div>';}
 html+='<div class="card"><div class="section-title">Рекомендации на сегодня</div>';recos.forEach(r=>{html+='<div class="reco-item"><div class="reco-icon">'+r.icon+'</div><div><div class="reco-title">'+r.title+'</div><div class="reco-text">'+r.text+'</div></div></div>';});html+='</div>';
 if(nextHol){html+='<div class="card" style="text-align:center;"><div style="font-size:11px;color:rgba(200,180,100,.4);letter-spacing:2px;margin-bottom:8px;">БЛИЖАЙШИЙ ПРАЗДНИК</div><div style="font-size:32px;">'+nextHol.icon+'</div><div style="font-size:16px;color:#e8d89a;margin-top:4px;">'+nextHol.name+'</div><div style="font-size:13px;color:rgba(200,180,100,.4);margin-top:2px;">'+(daysTo===0?'Сегодня!':'через '+daysTo+' дн.')+'</div></div>';}
@@ -202,13 +324,21 @@ function renderMoon(){const age=moonPhase(currentDate),phase=phaseName(age),illu
 
 function renderHolidays(){document.getElementById('hol-year-label').textContent=holYear;let fb='';FILTER_LABELS.forEach(function(f){fb+='<button class="filter-btn'+(holFilter===f[0]?' active':'')+'" onclick="setFilter(\''+f[0]+'\')">'+f[1]+'</button>';});document.getElementById('filter-bar').innerHTML=fb;const hols=getHolidays(holYear).filter(h=>holFilter==='all'||h.type===holFilter);let html='';hols.forEach(h=>{const dd=h.d.getDate()+' '+MONTHS[h.d.getMonth()].toLowerCase();const diff=Math.ceil((h.d-today)/864e5);const cd=diff===0?'сегодня':diff===1?'завтра':diff<0?'прошёл':'через '+diff+' дн.';html+='<div class="holiday-item"><div class="holiday-icon">'+h.icon+'</div><div style="flex:1"><div class="holiday-name">'+h.name+'</div><div style="display:flex;align-items:center"><span class="holiday-date">'+dd+'</span><span class="badge badge-'+h.type+'">'+BADGE_LABELS[h.type]+'</span></div></div><div style="font-size:11px;color:rgba(200,180,100,.3);white-space:nowrap;">'+cd+'</div></div>';});document.getElementById('holiday-list').innerHTML=html;}
 
+function renderHex(hex,question){let html='<div class="card" style="text-align:center;"><div class="hex-chinese">'+hex.ch+'</div><div class="hex-number">№'+hex.n+'</div><div class="hex-name">'+hex.name+'</div>'+drawHexagram(hex.lines)+'<div class="hex-judgment">'+hex.j+'</div><div class="hex-text" style="text-align:left;">'+hex.t+'</div><div style="margin-top:14px;padding:12px;background:rgba(255,215,0,.06);border-radius:10px;"><div style="font-size:11px;color:rgba(200,180,100,.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Совет</div><div style="color:#ffd700;font-size:14px;font-style:italic;">«'+hex.a+'»</div></div></div>';document.getElementById('hex-result').innerHTML=html;
+// Save to history
+const hist=loadHexHistory();hist.unshift({n:hex.n,name:hex.name,date:Date.now(),q:question||''});saveHexHistory(hist);renderHexHistory();}
+
+function renderHexHistory(){const hist=loadHexHistory();if(hist.length===0){document.getElementById('hex-history-card').style.display='none';return;}document.getElementById('hex-history-card').style.display='block';let html='';hist.forEach((h,i)=>{const d=new Date(h.date);const ds=d.getDate()+' '+MONTHS[d.getMonth()].toLowerCase()+' '+d.getFullYear();html+='<div class="hex-history-item" onclick="viewHistoryHex('+i+')"><span class="hex-history-num">№'+h.n+'</span><span class="hex-history-name">'+h.name+'</span><div class="hex-history-date">'+ds+'</div>'+(h.q?'<div class="hex-history-q">«'+h.q+'»</div>':'')+'</div>';});document.getElementById('hex-history').innerHTML=html;}
+
+window.viewHistoryHex=function(i){const hist=loadHexHistory();const h=hist[i];const hex=ICHING[h.n-1];renderHex(hex,h.q);window.scrollTo({top:document.getElementById('hex-result').offsetTop-20,behavior:'smooth'});}
+
 function renderNatal(bd,ts){const m=bd.getMonth()+1,d=bd.getDate();const si=getZodiac(m,d),z=ZODIAC[si];const pos=planetPositions(bd,ts);const aIdx=chiAnimal(bd.getFullYear()),eIdx=chiElement(bd.getFullYear());let html='<div class="card" style="text-align:center;"><div style="font-size:48px;">'+z.symbol+'</div><div style="font-size:22px;color:#e8d89a;margin-top:4px;">'+z.name+'</div><div><span class="element-badge" style="background:'+ELEM_COLORS[z.element]+'22;color:'+ELEM_COLORS[z.element]+'">'+ELEM_NAMES[z.element]+'</span></div><div style="margin-top:10px;font-size:13px;color:rgba(200,180,100,.5);">'+CHI_ANIMAL_ICONS[aIdx]+' '+CHI_ANIMALS[aIdx]+' · '+CHI_ELEM_ICONS[eIdx]+' '+CHI_ELEMENTS_5[eIdx]+'</div></div>';html+='<div style="padding:0 16px">'+drawWheel(pos,si)+'</div>';html+='<div class="card"><div class="section-title">Позиции планет</div>';pos.forEach(p=>{const s=ZODIAC[p.signIdx];html+='<div class="planet-row"><span class="planet-name">'+p.planet+'</span><span style="color:'+ELEM_COLORS[s.element]+'">'+s.symbol+' '+s.name+' '+p.degree+'°</span></div>';});html+='</div>';html+='<div class="card"><div class="section-title">Стихии</div><div class="element-grid">';['fire','earth','air','water'].forEach(el=>{const cnt=pos.filter(p=>ZODIAC[p.signIdx].element===el).length;const names={fire:'Огонь',earth:'Земля',air:'Воздух',water:'Вода'};html+='<div class="element-card" style="background:'+ELEM_COLORS[el]+'11;border:1px solid '+ELEM_COLORS[el]+'33"><div class="count" style="color:'+ELEM_COLORS[el]+'">'+cnt+'</div><div class="label">'+names[el]+'</div></div>';});html+='</div></div>';document.getElementById('natal-result').innerHTML=html;}
 
 function renderProfile(){const p=loadProfile();if(p){document.getElementById('prof-last').value=p.last||'';document.getElementById('prof-first').value=p.first||'';document.getElementById('prof-middle').value=p.middle||'';document.getElementById('prof-birth').value=p.birth||'';document.getElementById('prof-time').value=p.time||'12:00';if(p.first){const fn=(p.last||'')+' '+p.first+' '+(p.middle||'');const nn=calcNameNumber(fn);const meaning=NUM_MEANINGS[nn]||NUM_MEANINGS[nn%9||9];let html='<div class="card"><div class="section-title">Нумерология имени</div><div class="num-result"><div class="num-big">'+nn+'</div><div class="num-label">Число имени</div></div><div class="num-desc">'+meaning+'</div></div>';if(p.birth){const bd=new Date(p.birth);const si=getZodiac(bd.getMonth()+1,bd.getDate());const aIdx=chiAnimal(bd.getFullYear()),eIdx=chiElement(bd.getFullYear());html+='<div class="card" style="text-align:center;"><div class="section-title">Ваш знак</div><div style="font-size:40px;">'+ZODIAC[si].symbol+'</div><div style="font-size:18px;color:#e8d89a;margin-top:4px;">'+ZODIAC[si].name+'</div><div style="margin-top:8px;font-size:13px;color:rgba(200,180,100,.5);">'+CHI_ANIMAL_ICONS[aIdx]+' '+CHI_ANIMALS[aIdx]+' · '+CHI_ELEM_ICONS[eIdx]+' '+CHI_ELEMENTS_5[eIdx]+'</div></div>';}document.getElementById('numerology-result').innerHTML=html;}}}
 
 window.selectDay=function(y,m,d){currentDate=new Date(y,m,d);renderMoon();};
 window.setFilter=function(f){holFilter=f;renderHolidays();};
-window.showTab=function(t){document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.toggle('active',b.dataset.tab===t);});document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+t).classList.add('active');if(t==='profile')renderProfile();if(t==='today')renderToday();};
+window.showTab=function(t){document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.toggle('active',b.dataset.tab===t);});document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+t).classList.add('active');if(t==='profile')renderProfile();if(t==='today')renderToday();if(t==='iching')renderHexHistory();};
 window.saveProfile=function(){const data={last:document.getElementById('prof-last').value.trim(),first:document.getElementById('prof-first').value.trim(),middle:document.getElementById('prof-middle').value.trim(),birth:document.getElementById('prof-birth').value,time:document.getElementById('prof-time').value||'12:00'};if(!data.first){alert('Введите имя');return;}saveProfileData(data);renderAccountBar();renderProfile();renderToday();alert('Профиль сохранён!');};
 window.clearProfile=function(){if(confirm('Удалить все данные профиля?')){localStorage.removeItem('lunaris_profile');document.getElementById('prof-last').value='';document.getElementById('prof-first').value='';document.getElementById('prof-middle').value='';document.getElementById('prof-birth').value='';document.getElementById('prof-time').value='12:00';document.getElementById('numerology-result').innerHTML='';renderAccountBar();renderToday();}};
 document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',function(){showTab(btn.dataset.tab);});});
@@ -217,6 +347,7 @@ document.getElementById('moon-next').addEventListener('click',function(){viewMon
 document.getElementById('hol-prev').addEventListener('click',function(){holYear--;renderHolidays();});
 document.getElementById('hol-next').addEventListener('click',function(){holYear++;renderHolidays();});
 document.getElementById('natal-btn').addEventListener('click',function(){const v=document.getElementById('birth-date').value;const t=document.getElementById('birth-time').value;if(v)renderNatal(new Date(v),t);});
+document.getElementById('hex-cast-btn').addEventListener('click',function(){const q=document.getElementById('hex-question').value.trim();const coins=document.querySelectorAll('#coins-display .coin');coins.forEach(c=>{c.classList.remove('flipping');void c.offsetWidth;c.classList.add('flipping');});setTimeout(function(){const lines=castHexagram();const hex=findHexagram(lines);renderHex(hex,q);},1300);});
 const prof=loadProfile();if(prof&&prof.birth){document.getElementById('birth-date').value=prof.birth;document.getElementById('birth-time').value=prof.time||'12:00';}
 
 renderStars();renderAccountBar();renderToday();renderMoon();renderHolidays();
